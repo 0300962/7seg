@@ -11,7 +11,7 @@
     //Updates the dime displayed in the seven-segment display
     function update(time) {
         let output = [];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < time.length; i++) {
             /*Encodes the time into binary commands for each segment of the display
                 2
             0       5
@@ -84,7 +84,7 @@
                     x1 = 195;
                     break;
                 default:
-                    //Probably not possible
+                    x1 = (60*index)-45;
             }
 
             switch(segment) { //Checks which horizontal bar to construct
@@ -146,7 +146,7 @@
                     x1 = 195;
                     break;
                 default:
-                //Probably not possible
+                    x1 = (60*index)-45;
             }
             switch(segment) { //Checks which vertical bar to construct
                 case 0:
@@ -187,7 +187,7 @@
             "</filter> </defs>" +
             "<circle cx=\"120\" cy=\"85\" r=\"5\" style=\"fill:#ff0000; stroke:#800000; stroke-width:1px\"></circle> ";
         let style = "style=\"fill:#ff0000; stroke:#800000; stroke-width:1px\" filter=\"url(#shadow)\"></polygon>";
-        for (let i = 0; i < 5; i++) { //Iterates through the digits of the display
+        for (let i = 0; i < time.length; i++) { //Iterates through the digits of the display
             for (let j = 0; j < 7; j++) { //Iterates through the segments of each digit
                 if (output[i].charAt(j) === "1") { //Adds each segment as an SVG polygon
                     if (j < 2 || j >4) { //Vertical segment
@@ -203,19 +203,25 @@
     function time() {
         let x = new Date();
         let h = '';
+        let m = '';
         if (x.getHours() < 10) {
             h = '0'+x.getHours();
         } else {
             h = x.getHours();
         }
-        let t = ''+h+':'+x.getMinutes("MM");
+        if(x.getMinutes("MM") < 10){
+            m = '0'+x.getMinutes("MM");
+        } else {
+            m = x.getMinutes("MM");
+        }
+        let t = ''+h+':'+m;
         console.log(t);
         return t;
     }
 </script>
 
 <div id="container">
-<svg id="display" width="300" height="100">
+<svg id="display" width="500" height="100">
 
 </svg>
 
