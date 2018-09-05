@@ -1,0 +1,24 @@
+div {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#container {
+    height: 100px;
+    width: 320px;
+    padding: 5px;
+    padding-top: 10px;
+    margin-top: 20%;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #505050;
+}
+#inputs {
+    width: 800px;
+    padding: 20px;
+}
+
+#display {
+
+}
+

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>7-segment Display demo page</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="update('19:37')">
+
+<script>
+    //Updates the dime displayed in the seven-segment display
+    function update(time) {
+        let output = [];
+        for (let i = 0; i < 5; i++) {
+            /*Encodes the time into binary commands for each segment of the display
+                2
+            0       5
+                3
+            1       6
+                4                   */
+            output.push(encode(time.charAt(i)));
+        }
+        function encode(value) {
+            let code = "";
+            switch(value) {
+                case "1":
+                    code = "0000011";
+                    break;
+                case "2":
+                    code = "0111110";
+                    break;
+                case "3":
+                    code = "0011111";
+                    break;
+                case "4":
+                    code = "1001011";
+                    break;
+                case "5":
+                    code =  "1011101";
+                    break;
+                case "6":
+                    code = "1111101";
+                    break;
+                case "7":
+                    code = "0010011";
+                    break;
+                case "8":
+                    code = "1111111";
+                    break;
+                case "9":
+                    code = "1011111";
+                    break;
+                case "0":
+                    code = "1110111";
+                    break;
+                default:
+                    code = "0000000";
+                    break;
+            }
+            return code;
+        }
+
+        function horiz(index, segment) { //Constructs the point trace for a horizontal bar
+            /*        x2,y2----------------x3,y3
+            x1,y1 <                              > x4,y4
+                      x6,y6----------------x5,y5            */
+
+            let x1, x2, x3, x4, x5, x6, y1, y2, y3, y4, y5, y6 = 0;
+
+            switch(index) { //Checks which position in the display to construct
+                case 0:
+                    x1 = 5;
+                    break;
+                case 1:
+                    x1 = 65;
+                    break;
+                case 2:
+                    //Hour marker
+                    break;
+                case 3:
+                    x1 = 135;
+                    break;
+                case 4:
+                    x1 = 195;
+                    break;
+                default:
+                    //Probably not possible
+            }
+
+            switch(segment) { //Checks which horizontal bar to construct
+                case 2:
+                    y1 = 5;
+                    break;
+                case 3:
+                    y1 = 45;
+                    break;
+                case 4:
+                    y1 = 85;
+                    break;
+                default:
+                    //Not possible
+            }
+            //Builds the list of coordinates
+            x2 = (x1 + 5);
+            y2 = (y1 - 5);
+            x3 = (x2 + 30);
+            y3 = (y2);
+            x4 = (x3 + 5);
+            y4 = (y3 + 5);
+            x5 = (x4 - 5);
+            y5 = (y4 + 5);
+            x6 = (x5 - 30);
+            y6 = (y5);
+            //Returns a string to be inserted into the SVG statement
+            return ""+x1+","+y1+" "+x2+","+y2+" "+x3+","+y3+" "+x4+","+y4+" "+x5+","+y5+" "+x6+","+y6;
+        }
+        function vert(index, segment) { //Constructs the point trace for a vertical bar
+            /*
+                x1,y1
+
+            x6,y6   x2,y2
+            |           |
+            |           |
+            |           |
+            |           |
+            x5,y5   x3,y3
+
+                x4,y4           */
+
+            let x1, x2, x3, x4, x5, x6, y1, y2, y3, y4, y5, y6 = 0;
+
+            switch(index) { //Checks which position in the display to construct
+                case 0:
+                    x1 = 5;
+                    break;
+                case 1:
+                    x1 = 65;
+                    break;
+                case 2:
+                    //Hour marker
+                    break;
+                case 3:
+                    x1 = 135;
+                    break;
+                case 4:
+                    x1 = 195;
+                    break;
+                default:
+                //Probably not possible
+            }
+            switch(segment) { //Checks which vertical bar to construct
+                case 0:
+                    y1 = 5;
+                    break;
+                case 1:
+                    y1 = 45;
+                    break;
+                case 5:
+                    x1 = (x1 + 40);
+                    y1 = 5;
+                    break;
+                case 6:
+                    x1 = (x1 + 40);
+                    y1 = 45;
+                    break;
+                default:
+                //Not possible
+            }
+            //Builds the list of coordinates
+            x2 = (x1 + 5);
+            y2 = (y1 + 5);
+            x3 = (x2);
+            y3 = (y2 + 30);
+            x4 = (x3 - 5);
+            y4 = (y3 + 5);
+            x5 = (x4 - 5);
+            y5 = (y4 - 5);
+            x6 = (x5);
+            y6 = (y5 - 30);
+            //Returns a string to be inserted into the SVG statement
+            return ""+x1+","+y1+" "+x2+","+y2+" "+x3+","+y3+" "+x4+","+y4+" "+x5+","+y5+" "+x6+","+y6;
+        }
+
+        let digits = "<defs><filter id=\"shadow\" x=\"0\" y=\"0\" width=\"200%\" height=\"200%\">" +
+            "<feOffset result=\"offOut\" in=\"SourceGraphic\" dx=\"20\" dy=\"20\"/>" +
+            "<feBlend in=\"SourceGraphic\" in2=\"offOut\" mode=\"normal\"/>" +
+            "</filter> </defs>" +
+            "<circle cx=\"120\" cy=\"85\" r=\"5\" style=\"fill:#ff0000; stroke:#800000; stroke-width:1px\"></circle> ";
+        let style = "style=\"fill:#ff0000; stroke:#800000; stroke-width:1px\" filter=\"url(#shadow)\"></polygon>";
+        for (let i = 0; i < 5; i++) { //Iterates through the digits of the display
+            for (let j = 0; j < 7; j++) { //Iterates through the segments of each digit
+                if (output[i].charAt(j) === "1") { //Adds each segment as an SVG polygon
+                    if (j < 2 || j >4) { //Vertical segment
+                        digits += "<polygon points=\"" + vert(i,j) +"\" "+ style;
+                    } else { //Horizontal segment (no 0,1,5 or 6
+                        digits += "<polygon points=\"" + horiz(i,j) +"\" "+ style;
+                    }
+                }
+            }
+        }
+        document.getElementById("display").innerHTML = digits;
+    }
+    function time() {
+        let x = new Date();
+        let h = '';
+        if (x.getHours() < 10) {
+            h = '0'+x.getHours();
+        } else {
+            h = x.getHours();
+        }
+        let t = ''+h+':'+x.getMinutes("MM");
+        console.log(t);
+        return t;
+    }
+</script>
+
+<div id="container">
+<svg id="display" width="300" height="100">
+
+</svg>
+
+</div>
+<div id="inputs">
+    This page takes a numerical time input (below) and renders it in the style of a traditional seven-segment
+    display, using scalable vector graphics generated through JavaScript.<br/><br/>
+    <input type="time" id="times">
+    <button id="go" onclick="update(document.getElementById('times').value)">Update input</button>
+    <button id="timer" onclick="update(time())">Use current time</button>
+</div>
+
+
+
+</body>
+</html>
