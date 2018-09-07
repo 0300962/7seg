@@ -8,8 +8,12 @@
 <body onload="update('19:37')">
 
 <script>
+    var fill = "#ff0000";
+    var stroke = "#600000";
+
     //Updates the dime displayed in the seven-segment display
     function update(time) {
+        disp = time;
         let output = [];
         for (let i = 0; i < time.length; i++) {
             /*Encodes the time into binary commands for each segment of the display
@@ -181,12 +185,17 @@
             return ""+x1+","+y1+" "+x2+","+y2+" "+x3+","+y3+" "+x4+","+y4+" "+x5+","+y5+" "+x6+","+y6;
         }
 
-        let digits = "<defs><filter id=\"shadow\" x=\"0\" y=\"0\" width=\"200%\" height=\"200%\">" +
-            "<feOffset result=\"offOut\" in=\"SourceGraphic\" dx=\"20\" dy=\"20\"/>" +
-            "<feBlend in=\"SourceGraphic\" in2=\"offOut\" mode=\"normal\"/>" +
-            "</filter> </defs>" +
-            "<circle cx=\"120\" cy=\"85\" r=\"5\" style=\"fill:#ff0000; stroke:#800000; stroke-width:1px\"></circle> ";
-        let style = "style=\"fill:#ff0000; stroke:#800000; stroke-width:1px\" filter=\"url(#shadow)\"></polygon>";
+        let digits = "<defs>" +
+            "<filter id='f1' x='0' y='0' width='200%' height='200%'>" +
+            "<feOffset result='offOut' in='SourceGraphic' dx='3' dy='3' />" +
+            "<feColorMatrix result='matrixOut' in='offOut' type='matrix'"+
+            "values='0.5 0 0 0 0 0 0.5 0 0 0 0 0 0.5 0 0 0 0 0 1 0' />" +
+            "<feGaussianBlur result='blurOut' in='matrixOut' stdDeviation='3'/>" +
+            "<feBlend in='SourceGraphic' in2='blurOut' mode='normal' />" +
+            "</filter>" +
+            "</defs>"+
+            "<circle cx=\"120\" cy=\"85\" r=\"5\" style=\"fill:"+fill+"; stroke:"+stroke+"; stroke-width:1px\"filter=\"url(#f1)\"></circle> ";
+        let style = "style=\"fill:"+fill+"; stroke:"+stroke+"; stroke-width:1px\" filter=\"url(#f1)\"></polygon>";
         for (let i = 0; i < time.length; i++) { //Iterates through the digits of the display
             for (let j = 0; j < 7; j++) { //Iterates through the segments of each digit
                 if (output[i].charAt(j) === "1") { //Adds each segment as an SVG polygon
@@ -218,6 +227,27 @@
         console.log(t);
         return t;
     }
+    function colours(colour) { //Sets the colours for the display
+        switch(colour) {
+            case 'red':
+                fill = "#ff0000";
+                stroke = "#600000";
+                break;
+            case 'blue':
+                fill = "#00ffff";
+                stroke = "#007070";
+                break;
+            case 'orange':
+                fill = "#ff9900";
+                stroke = "#663300";
+                break;
+            case 'green' :
+                fill = "#00ff00";
+                stroke = "#006600";
+                break;
+        }
+        update(disp);
+    }
 </script>
 
 <div id="container">
@@ -231,10 +261,20 @@
     display, using scalable vector graphics generated through JavaScript.<br/><br/>
     <input type="time" id="times">
     <button id="go" onclick="update(document.getElementById('times').value)">Update input</button>
-    <button id="timer" onclick="update(time())">Use current time</button>
+    <button id="timer" onclick="update(time())">Use current time</button><br/>
+    Colour palettes:<br/>
+    <input type="radio" name="colours" value="reds" checked onclick="colours('red')">Red<br/>
+    <input type="radio" name="colours" value="blues" onclick="colours('blue')">Blue<br/>
+    <input type="radio" name="colours" value="oranges" onclick="colours('orange')">Orange<br/>
+    <input type="radio" name="colours" value="greens" onclick="colours('green')">Green<br/>
+    Background:<br/>
+    <input type="radio" id="grey" name="bg" value="dark" checked onclick="document.getElementById('container').style.backgroundColor ='#505050';">Dark<br/>
+    <input type="radio" name="bg" value="light" onclick="document.getElementById('container').style.backgroundColor ='unset';">Light<br/>
 </div>
 
-
+<script>
+    document.getElementById('grey').click();
+</script>
 
 </body>
 </html>

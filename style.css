@@ -11,7 +11,6 @@ div {
     margin-top: 20%;
     border: 1px solid black;
     border-radius: 5px;
-    background-color: #505050;
 }
 #inputs {
     width: 800px;
@@ -21,4 +20,6 @@ div {
 #display {
 
 }
-
+svg {
+    overflow: visible;
+}
